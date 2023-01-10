@@ -5,15 +5,17 @@ import me.alla.homework_therecipewebsite.services.RecipeService;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 public class RecipeServiceImpl implements RecipeService {
 
-    private static Integer recipeId = 0;
-    private static final Map<Integer, Recipe> recipes = new HashMap<>();
+    private static Long recipeId = 0L;
+    private static final Map<Long, Recipe> recipes = new HashMap<>();
     @Override
-    public Integer addRecipe(Recipe recipe) {
+    public Long addRecipe(Recipe recipe) {
         if (!recipes.containsValue(recipe)) {
             ++recipeId;
             recipes.put(recipeId, recipe);
@@ -22,7 +24,39 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public Recipe getRecipe(Integer recipeId) {
-        return recipes.get(recipeId);
+    public Recipe getRecipe(Long id) {
+        if (recipes.containsKey(id)) {
+            return recipes.get(id);
+        }
+        return null;
+    }
+
+    @Override
+    public Set<Recipe> getAllRecipes() {
+        Set<Recipe> recipeSet = new HashSet<>();
+        for (Recipe recipe : recipes.values()) {
+            if (recipe != null) {
+                recipeSet.add(recipe);
+            }
+        }
+        return recipeSet;
+    }
+
+    @Override
+    public Recipe editRecipe(Long id, Recipe recipe) {
+        if (recipes.containsKey(id)) {
+            recipes.put(id, recipe);
+            return recipe;
+        }
+        return null;
+    }
+
+    @Override
+    public boolean deleteRecipe(Long id) {
+        if (recipes.containsKey(id)) {
+            recipes.remove(id);
+            return true;
+        }
+        return false;
     }
 }

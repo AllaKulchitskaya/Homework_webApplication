@@ -5,15 +5,17 @@ import me.alla.homework_therecipewebsite.services.IngredientService;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 public class IngredientServiceImpl implements IngredientService {
 
-    private static Integer ingredientId = 0;
-    private static final Map<Integer, Ingredient> ingredients = new HashMap<>();
+    private static Long ingredientId = 0L;
+    private static final Map<Long, Ingredient> ingredients = new HashMap<>();
     @Override
-    public Integer addIngredient(Ingredient ingredient) {
+    public Long addIngredient(Ingredient ingredient) {
         if (!ingredients.containsValue(ingredient)) {
             ++ingredientId;
             ingredients.put(ingredientId, ingredient);
@@ -22,10 +24,40 @@ public class IngredientServiceImpl implements IngredientService {
     }
 
     @Override
-    public Ingredient getIngredient(Integer ingredientId) {
-        if (ingredients.containsKey(ingredientId)) {
-            return ingredients.get(ingredientId);
+    public Ingredient getIngredient(Long id) {
+        if (ingredients.containsKey(id)) {
+            return ingredients.get(id);
         }
         return null;
+    }
+
+    @Override
+    public Set<Ingredient> getAllIngredients() {
+        Set<Ingredient> ingredientSet = new HashSet<>();
+        for (Ingredient ingredient : ingredients.values()) {
+            if (ingredient != null) {
+                ingredientSet.add(ingredient);
+            }
+        }
+        return ingredientSet;
+    }
+
+
+    @Override
+    public Ingredient editIngredient(Long id, Ingredient ingredient) {
+        if (ingredients.containsKey(id)) {
+            ingredients.put(id, ingredient);
+            return ingredient;
+        }
+        return null;
+    }
+
+    @Override
+    public boolean deleteIngredient (Long id) {
+        if (ingredients.containsKey(id)) {
+            ingredients.remove(id);
+            return true;
+        }
+        return false;
     }
 }
