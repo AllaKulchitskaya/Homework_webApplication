@@ -4,10 +4,7 @@ import me.alla.homework_therecipewebsite.model.Recipe;
 import me.alla.homework_therecipewebsite.services.RecipeService;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class RecipeServiceImpl implements RecipeService {
@@ -17,46 +14,28 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public Long addRecipe(Recipe recipe) {
         if (!recipes.containsValue(recipe)) {
-            ++recipeId;
-            recipes.put(recipeId, recipe);
+            recipes.put(++recipeId, recipe);
         }
         return recipeId;
     }
 
     @Override
-    public Recipe getRecipe(Long id) {
-        if (recipes.containsKey(id)) {
-            return recipes.get(id);
-        }
-        return null;
+    public Optional<Recipe> getRecipe(Long id) {
+        return Optional.ofNullable(recipes.get(id));
     }
 
     @Override
-    public Set<Recipe> getAllRecipes() {
-        Set<Recipe> recipeSet = new HashSet<>();
-        for (Recipe recipe : recipes.values()) {
-            if (recipe != null) {
-                recipeSet.add(recipe);
-            }
-        }
-        return recipeSet;
+    public Optional<Map<Long, Recipe>> getAllRecipes() {
+        return Optional.ofNullable(new HashMap<>(recipes));
     }
 
     @Override
-    public Recipe editRecipe(Long id, Recipe recipe) {
-        if (recipes.containsKey(id)) {
-            recipes.put(id, recipe);
-            return recipe;
-        }
-        return null;
+    public Optional<Recipe> editRecipe(Long id, Recipe recipe) {
+        return Optional.ofNullable(recipes.replace(id, recipe));
     }
 
     @Override
-    public boolean deleteRecipe(Long id) {
-        if (recipes.containsKey(id)) {
-            recipes.remove(id);
-            return true;
-        }
-        return false;
+    public Optional<Recipe> deleteRecipe(Long id) {
+        return Optional.ofNullable(recipes.remove(id));
     }
 }

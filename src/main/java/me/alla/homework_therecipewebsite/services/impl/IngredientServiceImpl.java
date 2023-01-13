@@ -4,10 +4,7 @@ import me.alla.homework_therecipewebsite.model.Ingredient;
 import me.alla.homework_therecipewebsite.services.IngredientService;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class IngredientServiceImpl implements IngredientService {
@@ -17,47 +14,29 @@ public class IngredientServiceImpl implements IngredientService {
     @Override
     public Long addIngredient(Ingredient ingredient) {
         if (!ingredients.containsValue(ingredient)) {
-            ++ingredientId;
-            ingredients.put(ingredientId, ingredient);
+            ingredients.put(++ingredientId, ingredient);
         }
         return ingredientId;
     }
 
     @Override
-    public Ingredient getIngredient(Long id) {
-        if (ingredients.containsKey(id)) {
-            return ingredients.get(id);
-        }
-        return null;
+    public Optional<Ingredient> getIngredient(Long id) {
+        return Optional.ofNullable(ingredients.get(id));
     }
 
     @Override
-    public Set<Ingredient> getAllIngredients() {
-        Set<Ingredient> ingredientSet = new HashSet<>();
-        for (Ingredient ingredient : ingredients.values()) {
-            if (ingredient != null) {
-                ingredientSet.add(ingredient);
-            }
-        }
-        return ingredientSet;
+    public Optional<Map<Long, Ingredient>> getAllIngredients() {
+        return Optional.ofNullable(new HashMap<>(ingredients));
     }
 
 
     @Override
-    public Ingredient editIngredient(Long id, Ingredient ingredient) {
-        if (ingredients.containsKey(id)) {
-            ingredients.put(id, ingredient);
-            return ingredient;
-        }
-        return null;
+    public Optional<Ingredient> editIngredient(Long id, Ingredient ingredient) {
+        return Optional.ofNullable(ingredients.replace(id, ingredient));
     }
 
     @Override
-    public boolean deleteIngredient (Long id) {
-        if (ingredients.containsKey(id)) {
-            ingredients.remove(id);
-            return true;
-        }
-        return false;
+    public Optional<Ingredient> deleteIngredient (Long id) {
+        return Optional.ofNullable(ingredients.remove(id));
     }
 }
