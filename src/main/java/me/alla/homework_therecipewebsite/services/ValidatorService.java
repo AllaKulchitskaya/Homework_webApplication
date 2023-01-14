@@ -22,6 +22,6 @@ public class ValidatorService {
 
     public boolean isNotValid (Ingredient ingredient) {
         return StringUtils.isBlank(ingredient.getName()) || StringUtils.isBlank(ingredient.getMeasureUnit()) ||
-                ingredient.getNumber() <= 0;
+                ingredient.getNumber() < 0;
     }
 }
