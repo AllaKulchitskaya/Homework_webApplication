@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import me.alla.homework_therecipewebsite.services.RecipeFilesService;
+import me.alla.homework_therecipewebsite.services.RecipeService;
 import org.apache.commons.io.IOUtils;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -23,8 +24,11 @@ public class RecipeFilesController {
 
     private final RecipeFilesService recipeFilesService;
 
-    public RecipeFilesController(RecipeFilesService recipeFilesService) {
+    private final RecipeService recipeService;
+
+    public RecipeFilesController(RecipeFilesService recipeFilesService, RecipeService recipeService) {
         this.recipeFilesService = recipeFilesService;
+        this.recipeService = recipeService;
     }
 
     @GetMapping(value = "/export", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -35,8 +39,8 @@ public class RecipeFilesController {
                     description = "Файл успешно скачан"
             ),
             @ApiResponse(
-                    responseCode = "204",
-                    description = "Файл не существует"
+                    responseCode = "400",
+                    description = "Ошибка в запросе"
             )
     })
     public ResponseEntity<InputStreamResource> downloadRecipesFile() throws FileNotFoundException {
@@ -49,7 +53,7 @@ public class RecipeFilesController {
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"RecipesLog.json\"")
                     .body(resource);
         } else {
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.badRequest().build();
         }
     }
 
@@ -75,5 +79,29 @@ public class RecipeFilesController {
             e.printStackTrace();
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+
+    @GetMapping("/download")
+    @Operation(summary = "Скачать файл с рецептами в формате .txt")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Файл успешно скачан"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Ошибка в запросе"
+            )
+    })
+    public ResponseEntity<byte[]> downloadRecipesText() {
+        byte[] file = recipeService.downloadRecipesText();
+        if (file == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok()
+                .contentType(MediaType.TEXT_PLAIN)
+                .contentLength(file.length)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"Recipes.txt\"")
+                .body(file);
     }
 }

@@ -2,6 +2,7 @@ package me.alla.homework_therecipewebsite.services;
 
 import me.alla.homework_therecipewebsite.model.Ingredient;
 import me.alla.homework_therecipewebsite.model.Recipe;
+import org.springframework.lang.Nullable;
 
 import java.util.Map;
 import java.util.Optional;
@@ -16,4 +17,7 @@ public interface RecipeService {
     Optional<Recipe> editRecipe(Long id, Recipe recipe);
 
     Optional<Recipe> deleteRecipe(Long id);
+
+    @Nullable
+    byte[] downloadRecipesText();
 }

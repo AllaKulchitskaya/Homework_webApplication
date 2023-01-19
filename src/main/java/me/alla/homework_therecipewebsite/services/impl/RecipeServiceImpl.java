@@ -6,9 +6,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import me.alla.homework_therecipewebsite.model.Recipe;
 import me.alla.homework_therecipewebsite.services.RecipeFilesService;
 import me.alla.homework_therecipewebsite.services.RecipeService;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Service
@@ -43,13 +45,16 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     public Optional<Recipe> editRecipe(Long id, Recipe recipe) {
+        Optional<Recipe> result = Optional.ofNullable(recipes.replace(id, recipe));
         saveToFile();
-        return Optional.ofNullable(recipes.replace(id, recipe));
+        return result;
     }
 
     @Override
     public Optional<Recipe> deleteRecipe(Long id) {
-        return Optional.ofNullable(recipes.remove(id));
+        Optional<Recipe> result = Optional.ofNullable(recipes.remove(id));
+        saveToFile();
+        return result;
     }
 
     private void saveToFile() {
@@ -74,5 +79,15 @@ public class RecipeServiceImpl implements RecipeService {
     @PostConstruct
     private void init() {
         readFromFile();
+    }
+
+    @Nullable
+    @Override
+    public byte[] downloadRecipesText() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Recipe recipe : recipes.values()) {
+            stringBuilder.append(recipe).append("\n").append("***").append("\n");
+        }
+        return stringBuilder.toString().getBytes(StandardCharsets.UTF_8);
     }
 }

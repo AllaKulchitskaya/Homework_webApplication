@@ -44,13 +44,16 @@ public class IngredientServiceImpl implements IngredientService {
 
     @Override
     public Optional<Ingredient> editIngredient(Long id, Ingredient ingredient) {
+        Optional<Ingredient> result = Optional.ofNullable(ingredients.replace(id, ingredient));
         saveToFile();
-        return Optional.ofNullable(ingredients.replace(id, ingredient));
+        return result;
     }
 
     @Override
     public Optional<Ingredient> deleteIngredient (Long id) {
-        return Optional.ofNullable(ingredients.remove(id));
+        Optional<Ingredient> result = Optional.ofNullable(ingredients.remove(id));
+        saveToFile();
+        return result;
     }
 
     private void saveToFile() {
